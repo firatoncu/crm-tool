@@ -1,7 +1,7 @@
 # B2B Klima Satış CRM Sistemi – Core README
 
 ## 1. Projenin Amacı ve Kapsamı
-
+ÖNEMLİ DETAY: ARAYÜZ TAMAMEN TÜRKÇE OLACAK !!! UYGULAMA TÜRKİYEDE KULLANILACAK BU SEBEPLE ARAYÜZ TÜRKÇE OLMALI !!!!
 Bu proje, **B2B ağırlıklı klima sektöründe faaliyet gösteren bir üretici firma** için özel olarak geliştirilen,  
 **satış – teklif – proje takibi – kârlılık** odaklı bir **web tabanlı CRM sistemidir**.
 

@@ -1,0 +1,69 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/client"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model Customer {
+  id            String       @id @default(uuid())
+  company_name  String
+  phone         String
+  email         String?
+  city          String?
+  district      String?
+  address       String?
+  customer_type CustomerType @default(POTENTIAL)
+  notes         String?
+  contact_person String?
+  created_at    DateTime     @default(now())
+  updated_at    DateTime     @updatedAt
+  is_active     Boolean      @default(true) // For soft delete if needed, or status
+
+  activities    Activity[]
+
+  @@map("customers")
+}
+
+model Activity {
+  id          String       @id @default(uuid())
+  customer_id String
+  type        ActivityType
+  title       String
+  description String?
+  created_by  String       // User ID or Name
+  created_at  DateTime     @default(now())
+
+  // Attachments will be stored as JSON for flexibility, or we could use a separate table
+  // For MVP, simplified as a JSON list of { url, name, type }
+  attachments Json?        
+
+  customer    Customer     @relation(fields: [customer_id], references: [id])
+
+  @@map("activities")
+}
+
+enum CustomerType {
+  DEALER
+  AUTHORIZED_SERVICE
+  ACTIVE
+  POTENTIAL
+  CORPORATE_END_USER
+  PROJECT_CUSTOMER
+  INDIVIDUAL
+  EXPORT_DISTRIBUTOR
+  EXPORT_PROJECT
+}
+
+enum ActivityType {
+  INTRO_CALL
+  WHATSAPP_MESSAGE
+  EMAIL
+  QUOTE_SENT
+  SHIPMENT
+  INSTALLATION
+  NOTE
+}
