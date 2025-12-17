@@ -10,6 +10,7 @@ import type { Customer } from "@prisma/client";
 import { ActivityTimeline } from "@/components/activity-timeline";
 import { ArrowLeft, Trash } from "lucide-react";
 import { CUSTOMER_TYPE_LABELS } from "@/lib/constants";
+import { updateCustomer, deleteCustomer } from "@/app/actions/customers";
 
 interface CustomerFormProps {
     initialCustomer: Customer;
@@ -25,27 +26,23 @@ export function CustomerForm({ initialCustomer }: CustomerFormProps) {
         e.preventDefault();
         setIsSaving(true);
         try {
-            const res = await fetch(`/api/customers/${customer.id}`, {
-                method: "PUT",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({
-                    companyName: customer.companyName,
-                    phone: customer.phone,
-                    city: customer.city,
-                    district: customer.district,
-                    customerType: customer.customerType,
-                    notes: customer.notes,
-                    email: customer.email,
-                    contactPerson: customer.contactPerson,
-                    address: customer.address,
-                })
+            const result = await updateCustomer(customer.id, {
+                companyName: customer.companyName,
+                phone: customer.phone,
+                city: customer.city,
+                district: customer.district,
+                address: customer.address,
+                customerType: customer.customerType,
+                email: customer.email,
+                contactPerson: customer.contactPerson,
+                notes: customer.notes,
             });
-            if (res.ok) {
-                const updated = await res.json();
-                setCustomer(updated); // Update state with response
+
+            if (result.success && result.data) {
+                setCustomer(result.data);
                 alert("Müşteri güncellendi");
             } else {
-                throw new Error("Güncelleme başarısız");
+                throw new Error(result.error || "Güncelleme başarısız");
             }
         } catch (error) {
             console.error(error);
@@ -58,12 +55,12 @@ export function CustomerForm({ initialCustomer }: CustomerFormProps) {
     const handleDelete = async () => {
         if (!confirm("Bu müşteriyi silmek istediğinize emin misiniz?")) return;
         try {
-            const res = await fetch(`/api/customers/${customer.id}`, { method: "DELETE" });
-            if (res.ok) {
+            const result = await deleteCustomer(customer.id);
+            if (result.success) {
                 router.push("/customers");
-                router.refresh(); // Refresh list page
+                // router.refresh(); // Not strictly needed if revalidatePath works, but safe.
             } else {
-                throw new Error("Silme başarısız");
+                throw new Error(result.error || "Silme başarısız");
             }
         } catch (e) {
             console.error(e);
