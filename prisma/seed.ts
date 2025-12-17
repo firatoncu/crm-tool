@@ -1,6 +1,12 @@
-import { PrismaClient, CustomerType, ActivityType } from '@prisma/client';
+import { PrismaClient, CustomerType, ActivityType } from '../src/generated/client';
 
-const prisma = new PrismaClient();
+import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+
+const adapter = new PrismaBetterSqlite3({
+    url: "file:./dev.db",
+});
+
+const prisma = new PrismaClient({ adapter });
 
 async function main() {
     console.log('Seeding data...');
