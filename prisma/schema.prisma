@@ -1,49 +1,50 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../src/generated/client"
+  provider = "prisma-client-js"
   previewFeatures = ["driverAdapters"]
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
 }
 
 model Customer {
   id            String       @id @default(uuid())
-  company_name  String
+  companyName   String       @map("company_name")
   phone         String
   email         String?
   city          String?
   district      String?
   address       String?
-  customer_type CustomerType @default(POTENTIAL)
+  customerType  CustomerType @default(POTENTIAL) @map("customer_type")
   notes         String?
-  contact_person String?
-  created_at    DateTime     @default(now())
-  updated_at    DateTime     @updatedAt
-  is_active     Boolean      @default(true) // For soft delete if needed, or status
+  contactPerson String?      @map("contact_person")
+  createdAt     DateTime     @default(now()) @map("created_at")
+  updatedAt     DateTime     @updatedAt @map("updated_at")
+  isActive      Boolean      @default(true) @map("is_active")
 
   activities    Activity[]
 
   @@map("customers")
+  @@index([phone])
+  @@index([companyName])
 }
 
 model Activity {
   id          String       @id @default(uuid())
-  customer_id String
+  customerId  String       @map("customer_id")
   type        ActivityType
   title       String
   description String?
-  created_by  String       // User ID or Name
-  created_at  DateTime     @default(now())
+  createdBy   String       @map("created_by")
+  createdAt   DateTime     @default(now()) @map("created_at")
 
-  // Attachments will be stored as JSON for flexibility, or we could use a separate table
-  // For MVP, simplified as a JSON list of { url, name, type }
-  attachments Json?        
+  // Attachments stored as JSON
+  attachments Json?
 
-  customer    Customer     @relation(fields: [customer_id], references: [id])
+  customer    Customer     @relation(fields: [customerId], references: [id])
 
   @@map("activities")
+  @@index([customerId, createdAt])
 }
 
 enum CustomerType {

@@ -1,99 +1,69 @@
-import { PrismaClient, CustomerType, ActivityType } from '../src/generated/client';
+import { PrismaClient, CustomerType, ActivityType } from '@prisma/client';
 
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
+import { PrismaPg } from '@prisma/adapter-pg';
+import { Pool } from 'pg';
 
-const adapter = new PrismaBetterSqlite3({
-    url: "file:./dev.db",
-});
-
+const url = process.env.DATABASE_URL || "";
+const connectionString = url.includes("localhost")
+    ? url.replace("localhost", "127.0.0.1").replace(":5432", ":5433")
+    : url;
+const pool = new Pool({ connectionString });
+const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 
 async function main() {
-    console.log('Seeding data...');
+    console.log('Seeding started...');
 
-    // Clean up
-    await prisma.activity.deleteMany();
-    await prisma.customer.deleteMany();
+    // Create 5-10 Customers
+    const customerCount = 7;
 
-    const customersData = [
-        {
-            company_name: "KlimaPlus Ltd",
-            phone: "05321112233",
-            email: "info@klimaplus.com",
-            city: "Istanbul",
-            customer_type: CustomerType.DEALER,
-            contact_person: "Ahmet Yilmaz",
-        },
-        {
-            company_name: "Ege Sogutma AS",
-            phone: "02324445566",
-            email: "satis@egesogutma.com",
-            city: "Izmir",
-            customer_type: CustomerType.AUTHORIZED_SERVICE,
-            contact_person: "Mehmet Demir",
-        },
-        {
-            company_name: "Mega Project Insaat",
-            phone: "02123334455",
-            city: "Istanbul",
-            customer_type: CustomerType.PROJECT_CUSTOMER,
-            contact_person: "Ayse Kara",
-            notes: "Buyuk proje potansiyeli",
-        },
-        {
-            company_name: "Antalya Otelcilik",
-            phone: "02425556677",
-            city: "Antalya",
-            customer_type: CustomerType.CORPORATE_END_USER,
-        },
-        {
-            company_name: "Bireysel Musteri Ali",
-            phone: "05051234567",
-            customer_type: CustomerType.INDIVIDUAL,
-            city: "Ankara",
-        },
-        {
-            company_name: "Global Export GMBH",
-            phone: "+49123456789",
-            customer_type: CustomerType.EXPORT_DISTRIBUTOR,
-            city: "Berlin",
-            email: "import@global.de",
-        }
-    ];
+    for (let i = 0; i < customerCount; i++) {
+        const companyName = `Company ${i + 1} Ltd. Şti.`;
+        const phone = `0555123456${i}`;
 
-    for (const c of customersData) {
         const customer = await prisma.customer.create({
-            data: c,
-        });
-
-        console.log(`Created customer: ${customer.company_name}`);
-
-        // Add Activities
-        await prisma.activity.create({
             data: {
-                customer_id: customer.id,
-                type: ActivityType.INTRO_CALL,
-                title: "Ilk Gorusme",
-                description: "Genel tanisma ve urun tanitimi yapildi.",
-                created_by: "Sales Rep 1"
+                companyName,
+                phone,
+                email: `info@company${i + 1}.com`,
+                city: 'Istanbul',
+                district: i % 2 === 0 ? 'Kadikoy' : 'Besiktas',
+                customerType: i % 2 === 0 ? CustomerType.POTENTIAL : CustomerType.DEALER,
+                contactPerson: `Manager ${i + 1}`,
+                notes: 'Seeded customer',
+                isActive: true,
             }
         });
 
-        // Random additional activity
-        if (Math.random() > 0.5) {
+        // Create 3-5 Activities for each
+        const activityCount = 3 + (i % 3);
+
+        for (let j = 0; j < activityCount; j++) {
+            const hasAttachment = j === 0; // First activity has attachment
+
+            const attachments = hasAttachment ? [
+                {
+                    url: 'https://example.com/file.pdf',
+                    filename: 'proposal.pdf',
+                    contentType: 'application/pdf',
+                    size: 1024 * 50
+                }
+            ] : [];
+
             await prisma.activity.create({
                 data: {
-                    customer_id: customer.id,
-                    type: ActivityType.QUOTE_SENT,
-                    title: "Teklif Gonderildi",
-                    description: "VRF sistem icin on teklif paylasildi.",
-                    created_by: "Sales Rep 1"
+                    customerId: customer.id,
+                    type: ActivityType.INTRO_CALL,
+                    title: `Activity ${j + 1} for ${companyName}`,
+                    description: 'Discussed potential partnership.',
+                    createdBy: 'Seed Script',
+                    attachments: attachments as any // Cast to Json
                 }
             });
         }
     }
 
-    console.log('Seeding finished.');
+    console.log('Seeding completed.');
 }
 
 main()

@@ -1,4 +1,4 @@
-import { CustomerType, ActivityType } from "@/generated/client/enums";
+import { CustomerType, ActivityType } from "@prisma/client";
 
 export const CUSTOMER_TYPE_LABELS: Record<CustomerType, string> = {
     DEALER: "Bayi",

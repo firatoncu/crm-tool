@@ -5,8 +5,8 @@ import { useParams, useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { CustomerType } from "@/generated/client/enums";
-import type { Customer } from "@/generated/client";
+import { CustomerType } from "@prisma/client";
+import type { Customer } from "@prisma/client";
 import { ActivityTimeline } from "@/components/activity-timeline";
 import { ArrowLeft, Trash } from "lucide-react";
 import { CUSTOMER_TYPE_LABELS } from "@/lib/constants";
@@ -51,14 +51,14 @@ export default function CustomerDetailPage() {
                 method: "PUT",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
-                    company_name: customer.company_name,
+                    companyName: customer.companyName,
                     phone: customer.phone,
                     city: customer.city,
                     district: customer.district,
-                    customer_type: customer.customer_type,
+                    customerType: customer.customerType,
                     notes: customer.notes,
                     email: customer.email,
-                    contact_person: customer.contact_person,
+                    contactPerson: customer.contactPerson,
                     address: customer.address,
                 })
             });
@@ -101,8 +101,8 @@ export default function CustomerDetailPage() {
                     <ArrowLeft className="h-4 w-4" />
                 </Button>
                 <div>
-                    <h1 className="text-3xl font-bold tracking-tight">{customer.company_name}</h1>
-                    <p className="text-muted-foreground">{CUSTOMER_TYPE_LABELS[customer.customer_type]}</p>
+                    <h1 className="text-3xl font-bold tracking-tight">{customer.companyName}</h1>
+                    <p className="text-muted-foreground">{CUSTOMER_TYPE_LABELS[customer.customerType]}</p>
                 </div>
                 <div className="ml-auto">
                     <Button variant="destructive" size="sm" onClick={handleDelete}>
@@ -139,8 +139,8 @@ export default function CustomerDetailPage() {
                                 <div className="space-y-2">
                                     <label className="text-sm font-medium">Firma Adı</label>
                                     <Input
-                                        value={customer.company_name || ""}
-                                        onChange={e => setCustomer({ ...customer, company_name: e.target.value })}
+                                        value={customer.companyName || ""}
+                                        onChange={e => setCustomer({ ...customer, companyName: e.target.value })}
                                     />
                                 </div>
                                 <div className="space-y-2">
@@ -154,8 +154,8 @@ export default function CustomerDetailPage() {
                                     <label className="text-sm font-medium">Tip</label>
                                     <select
                                         className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                        value={customer.customer_type}
-                                        onChange={(e) => setCustomer({ ...customer, customer_type: e.target.value as CustomerType })}
+                                        value={customer.customerType}
+                                        onChange={(e) => setCustomer({ ...customer, customerType: e.target.value as CustomerType })}
                                     >
                                         {Object.values(CustomerType).map((t) => (
                                             <option key={t} value={t}>{CUSTOMER_TYPE_LABELS[t]}</option>
@@ -172,8 +172,8 @@ export default function CustomerDetailPage() {
                                 <div className="space-y-2">
                                     <label className="text-sm font-medium">Yetkili Kişi</label>
                                     <Input
-                                        value={customer.contact_person || ""}
-                                        onChange={e => setCustomer({ ...customer, contact_person: e.target.value })}
+                                        value={customer.contactPerson || ""}
+                                        onChange={e => setCustomer({ ...customer, contactPerson: e.target.value })}
                                     />
                                 </div>
                                 <div className="space-y-2">

@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { ActivityType } from "@/generated/client";
+import { ActivityType } from "@prisma/client";
 
 export async function GET(
     request: NextRequest,
@@ -10,8 +10,8 @@ export async function GET(
 
     try {
         const activities = await prisma.activity.findMany({
-            where: { customer_id: id },
-            orderBy: { created_at: "desc" },
+            where: { customerId: id },
+            orderBy: { createdAt: "desc" },
         });
 
         return NextResponse.json(activities);
@@ -31,7 +31,7 @@ export async function POST(
 
     try {
         const body = await request.json();
-        const { type, title, description, attachments, created_by } = body;
+        const { type, title, description, attachments, createdBy } = body;
 
         // Validation
         if (!type || !title) {
@@ -43,12 +43,12 @@ export async function POST(
 
         const activity = await prisma.activity.create({
             data: {
-                customer_id: id,
+                customerId: id,
                 type: type as ActivityType,
                 title,
                 description,
                 attachments: attachments || [],
-                created_by: created_by || "System", // Default if not provided
+                createdBy: createdBy || "System", // Default if not provided
             },
         });
 

@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { ActivityType } from "@/generated/client/enums";
-import type { Activity } from "@/generated/client";
+import { ActivityType } from "@prisma/client";
+import type { Activity } from "@prisma/client";
 import { Phone, Mail, MessageCircle, FileText, Truck, Wrench, StickyNote } from "lucide-react";
 import { ACTIVITY_TYPE_LABELS } from "@/lib/constants";
 
@@ -50,7 +50,7 @@ export function ActivityTimeline({ customerId }: ActivityTimelineProps) {
             const res = await fetch(`/api/customers/${customerId}/activities`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ ...newActivity, created_by: "Satış Temsilcisi" }), // Mock user
+                body: JSON.stringify({ ...newActivity, createdBy: "Satış Temsilcisi" }), // Mock user
             });
 
             if (res.ok) {
@@ -132,7 +132,7 @@ export function ActivityTimeline({ customerId }: ActivityTimelineProps) {
                                 <div className="flex items-center gap-2">
                                     <span className="text-sm font-semibold">{activity.title}</span>
                                     <span className="text-xs text-muted-foreground">
-                                        {new Date(activity.created_at).toLocaleString('tr-TR')}
+                                        {new Date(activity.createdAt).toLocaleString('tr-TR')}
                                     </span>
                                     <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold bg-secondary text-secondary-foreground">
                                         {ACTIVITY_TYPE_LABELS[activity.type] || activity.type}
@@ -144,7 +144,7 @@ export function ActivityTimeline({ customerId }: ActivityTimelineProps) {
                                     </p>
                                 )}
                                 <div className="text-xs text-muted-foreground mt-1">
-                                    Ekleyen: {activity.created_by}
+                                    Ekleyen: {activity.createdBy}
                                 </div>
                             </div>
                         </div>

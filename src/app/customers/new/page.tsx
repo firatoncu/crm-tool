@@ -5,20 +5,20 @@ import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { CustomerType } from "@/generated/client/enums";
-import type { Customer } from "@/generated/client"; // type import is safe
+import { CustomerType } from "@prisma/client";
+import type { Customer } from "@prisma/client"; // type import is safe
 import { ArrowLeft, AlertTriangle } from "lucide-react";
 import { CUSTOMER_TYPE_LABELS } from "@/lib/constants";
 
 export default function NewCustomerPage() {
     const router = useRouter();
     const [form, setForm] = useState({
-        company_name: "",
+        companyName: "",
         phone: "",
-        customer_type: "POTENTIAL" as CustomerType,
+        customerType: "POTENTIAL" as CustomerType,
         city: "",
         district: "",
-        contact_person: "",
+        contactPerson: "",
         email: "",
         notes: ""
     });
@@ -75,7 +75,7 @@ export default function NewCustomerPage() {
                                 Olası Mükerrer Kayıt
                             </div>
                             <p className="text-sm mt-1">
-                                <strong>{duplicateWarning.company_name}</strong> isimli ve <strong>{duplicateWarning.phone}</strong> telefonlu bir müşteri zaten mevcut.
+                                <strong>{duplicateWarning.companyName}</strong> isimli ve <strong>{duplicateWarning.phone}</strong> telefonlu bir müşteri zaten mevcut.
                             </p>
                             <div className="mt-3 flex gap-2">
                                 <Button
@@ -103,8 +103,8 @@ export default function NewCustomerPage() {
                                 <Input
                                     placeholder="Örnek Ltd. Şti."
                                     required
-                                    value={form.company_name}
-                                    onChange={e => setForm({ ...form, company_name: e.target.value })}
+                                    value={form.companyName}
+                                    onChange={e => setForm({ ...form, companyName: e.target.value })}
                                 />
                             </div>
                             <div className="space-y-2">
@@ -120,8 +120,8 @@ export default function NewCustomerPage() {
                                 <label className="text-sm font-medium">Tip</label>
                                 <select
                                     className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                                    value={form.customer_type}
-                                    onChange={(e) => setForm({ ...form, customer_type: e.target.value as CustomerType })}
+                                    value={form.customerType}
+                                    onChange={(e) => setForm({ ...form, customerType: e.target.value as CustomerType })}
                                 >
                                     {Object.values(CustomerType).map((t) => (
                                         <option key={t} value={t}>{CUSTOMER_TYPE_LABELS[t]}</option>
@@ -148,8 +148,8 @@ export default function NewCustomerPage() {
                                 <label className="text-sm font-medium">Yetkili Kişi</label>
                                 <Input
                                     placeholder="Ad Soyad"
-                                    value={form.contact_person}
-                                    onChange={e => setForm({ ...form, contact_person: e.target.value })}
+                                    value={form.contactPerson}
+                                    onChange={e => setForm({ ...form, contactPerson: e.target.value })}
                                 />
                             </div>
                             <div className="space-y-2">

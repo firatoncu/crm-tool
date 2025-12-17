@@ -3,8 +3,8 @@ import { Plus, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { CustomerType } from "@/generated/client/enums";
-import type { Customer } from "@/generated/client"; // safe type import
+import { CustomerType } from "@prisma/client";
+import type { Customer } from "@prisma/client"; // safe type import
 import { CUSTOMER_TYPE_LABELS } from "@/lib/constants";
 
 async function getCustomers(search: string) {
@@ -79,14 +79,14 @@ export default async function CustomersPage({
                                 ) : (
                                     customers.map((customer) => (
                                         <tr key={customer.id} className="border-t hover:bg-muted/50 transition-colors">
-                                            <td className="p-4 font-medium">{customer.company_name}</td>
+                                            <td className="p-4 font-medium">{customer.companyName}</td>
                                             <td className="p-4">
                                                 <span className="inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 border-transparent bg-primary text-primary-foreground hover:bg-primary/80">
-                                                    {CUSTOMER_TYPE_LABELS[customer.customer_type as CustomerType] || customer.customer_type}
+                                                    {CUSTOMER_TYPE_LABELS[customer.customerType as CustomerType] || customer.customerType}
                                                 </span>
                                             </td>
                                             <td className="p-4">{customer.phone}</td>
-                                            <td className="p-4">{customer.contact_person || "-"}</td>
+                                            <td className="p-4">{customer.contactPerson || "-"}</td>
                                             <td className="p-4">{customer.city || "-"}</td>
                                             <td className="p-4">
                                                 <Link href={`/customers/${customer.id}`}>

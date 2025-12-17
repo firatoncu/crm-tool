@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { CustomerType, Prisma } from "@/generated/client";
+import { CustomerType, Prisma } from "@prisma/client";
 
 export async function GET(request: NextRequest) {
     try {
@@ -9,23 +9,23 @@ export async function GET(request: NextRequest) {
         const type = searchParams.get("type");
 
         const where: Prisma.CustomerWhereInput = {
-            is_active: true,
+            isActive: true,
         };
 
         if (search) {
             where.OR = [
-                { company_name: { contains: search } }, // Case insensitive via Prisma? SQLite is mixed, Postgres is case sensitive usually but contains is case sensitive in Default? Mode: insensitive is needed
-                { phone: { contains: search } },
+                { companyName: { contains: search, mode: 'insensitive' } },
+                { phone: { contains: search, mode: 'insensitive' } },
             ];
         }
 
         if (type && Object.values(CustomerType).includes(type as CustomerType)) {
-            where.customer_type = type as CustomerType;
+            where.customerType = type as CustomerType;
         }
 
         const customers = await prisma.customer.findMany({
             where,
-            orderBy: { created_at: "desc" },
+            orderBy: { createdAt: "desc" },
         });
 
         return NextResponse.json(customers);
@@ -41,10 +41,10 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json();
-        const { company_name, phone, type, city, district, email, notes, contact_person } = body;
+        const { companyName, phone, type, city, district, email, notes, contactPerson } = body;
 
         // Validate required fields
-        if (!company_name || !phone) {
+        if (!companyName || !phone) {
             return NextResponse.json(
                 { error: "Company name and phone are required" },
                 { status: 400 }
@@ -71,7 +71,7 @@ export async function POST(request: NextRequest) {
             const existing = await prisma.customer.findFirst({
                 where: {
                     OR: [
-                        { company_name: { equals: company_name } }, // SQLite default insensitive? No.
+                        { companyName: { equals: companyName, mode: 'insensitive' } },
                         { phone: { contains: phone } }, // Phone exact match often better
                     ]
                 }
@@ -93,14 +93,14 @@ export async function POST(request: NextRequest) {
 
         const newCustomer = await prisma.customer.create({
             data: {
-                company_name,
+                companyName,
                 phone,
-                customer_type: (type as CustomerType) || "POTENTIAL",
+                customerType: (type as CustomerType) || "POTENTIAL",
                 city,
                 district,
                 email,
                 notes,
-                contact_person,
+                contactPerson,
             },
         });
 

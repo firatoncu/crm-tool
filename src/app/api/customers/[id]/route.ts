@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
-import { CustomerType } from "@/generated/client";
+import { CustomerType } from "@prisma/client";
 
 // Helper to access params properly in Next.js 15+ (params is a Promise)
 // But for standard route handlers in App Router, params is 2nd arg.
@@ -26,7 +26,7 @@ export async function GET(
             where: { id },
             include: {
                 activities: {
-                    orderBy: { created_at: "desc" },
+                    orderBy: { createdAt: "desc" },
                     take: 5, // Preview
                 },
             },
@@ -61,7 +61,7 @@ export async function PUT(
             where: { id },
             data: {
                 ...body,
-                updated_at: new Date(),
+                updatedAt: new Date(),
             },
         });
 
@@ -84,7 +84,7 @@ export async function DELETE(
         // Soft delete
         const deleted = await prisma.customer.update({
             where: { id },
-            data: { is_active: false },
+            data: { isActive: false },
         });
 
         return NextResponse.json({ message: "Customer soft deleted", id: deleted.id });
