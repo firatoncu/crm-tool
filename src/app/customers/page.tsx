@@ -1,29 +1,11 @@
-import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-// Removed duplicate imports if any, using replaced block above
-/* 
-Note: I added imports in the previous chunk replacement (import { prisma } ...). 
-But I need to make sure I don't break existing imports or duplicate them. 
-The previous replacement REPLACED getCustomers function but included imports AT THE TOP? 
-Wait, the `replace_file_content` instruction `ReplacementContent` had imports at the top! 
-BUT if I target `getCustomers` lines 10-21, I cannot inject imports at line 1. 
-I must split this or put imports inside the function (bad practice) or replace the top of the file.
-
-Let's re-read the previous tool call.
-I targeted lines 10-21. 
-If I put `import { prisma } ...` there, it will be in the middle of imports list if line 10 follows imports?
-Line 9 was empty. Lines 1-8 were imports.
-So inserting imports at line 10 is technically valid JS/TS (imports can be anywhere) but ugly.
-However, I should probably add imports cleanly at the top.
-*/
+import Link from "next/link";
 import { Plus, Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { CustomerType } from "@prisma/client";
-import type { Customer } from "@prisma/client"; // safe type import
+import type { Customer } from "@prisma/client";
 import { CUSTOMER_TYPE_LABELS } from "@/lib/constants";
-
 import { prisma } from "@/lib/prisma";
 import { Prisma } from "@prisma/client";
 
