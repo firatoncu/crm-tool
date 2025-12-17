@@ -13,6 +13,7 @@ export default defineConfig({
     url: env("DATABASE_URL")?.includes("localhost")
       ? env("DATABASE_URL")?.replace("localhost", "127.0.0.1").replace(":5432", ":5433")
       : env("DATABASE_URL"),
+    // @ts-ignore
     directUrl: process.env.DIRECT_URL
       ? (process.env.DIRECT_URL.includes("localhost")
         ? process.env.DIRECT_URL.replace("localhost", "127.0.0.1").replace(":5432", ":5433")
